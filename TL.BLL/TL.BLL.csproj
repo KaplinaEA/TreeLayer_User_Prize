@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TL.BLL.Interface\TL.BLL.Interface.csproj" />
+    <ProjectReference Include="..\TL.DAL.Interface\TL.DAL.Interface.csproj" />
+    <ProjectReference Include="..\TL.DAL\TL.DAL.csproj" />
+  </ItemGroup>
+
+</Project>
