@@ -6,73 +6,95 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using TL.DAL.Interface;
 using TL.Entities;
+using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace TL.DAL
 {
-    public class PrizeDao: IprizeDao 
+    public class PrizeDao : IprizeDao
     {
-        private List<Prize> prizes;
 
-        public PrizeDao() => this.prizes = new List<Prize>();
+        private string _connectionString = "Data Source=DESKTOP-ERH7HNQ\\SQLEXPRESS;Initial Catalog=User_Prize;Integrated Security=True";
+        public void Add(string Value)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                var command = connection.CreateCommand();
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.CommandText = "INSERT_Prize";
+
+                var parameter = command.CreateParameter();
+                parameter.DbType = DbType.String;
+                parameter.Value = Value;
+                parameter.ParameterName = "@Title";
+                command.Parameters.Add(parameter);
+
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+        
+
         public IEnumerable<Prize> GetAll()
         {
-            return this.prizes.ToList();
-        }
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                List<Prize> products = new List<Prize>();
 
-        public int Add(string Value)
-        {
-            Prize prize = new Prize { Title = Value, Id = prizes.Count()+1 };
-            prizes.Add(prize);
-            return prize.Id;
-        }
 
-        public void Delete(int value)
-        {
-            prizes.RemoveAt(value);
-        }
+                var result = new List<Prize>();
+                SqlCommand command = connection.CreateCommand();
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "GetAll_Prize";
+                connection.Open();
+                var reader = command.ExecuteReader();
 
-        public void Serialize()
-        {
-            FileStream fs1 = new FileStream("PrizeFile.dat", FileMode.OpenOrCreate);
-            BinaryFormatter formatter1 = new BinaryFormatter();
-            try
-            {
-                formatter1.Serialize(fs1, prizes);
+                while (reader.Read())
+                {
+                    result.Add(new Prize
+                    {
+                        Id = (int)reader["PrizeId"],
+                        Title = (string)reader["Title"]
+                    });
+                }
+                return result.ToList();
             }
-            catch (SerializationException e)
-            {
-                Console.WriteLine("Failed to serialize. Reason: " + e.Message);
-                throw;
-            }
-            finally
-            {
-                fs1.Close();
-            }
-        }
 
-        public void Deserialize()
-        {
-            FileStream fs = new FileStream("PrizeFile.dat", FileMode.Open);
-            try
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                prizes = (List<Prize>)formatter.Deserialize(fs);
-
-            }
-            catch (SerializationException e)
-            {
-                Console.WriteLine("Failed to deserialize. Reason: " + e.Message);
-                throw;
-            }
-            finally
-            {
-                fs.Close();
-            }
         }
 
         public Prize Get(int value)
         {
-            return prizes.Find(item => item.Id == value);
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                var command = connection.CreateCommand();
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "GetById_Prize";
+                connection.Open();
+
+                var parametrDescription = command.CreateParameter();
+                parametrDescription.DbType = DbType.Int32;
+                parametrDescription.Value = value;
+                parametrDescription.ParameterName = "@ID";
+                command.Parameters.Add(parametrDescription);
+
+                var reader = command.ExecuteReader();
+                Prize result = new Prize();
+
+                while (reader.Read())
+                {
+                    result = new Prize
+                    {
+                        Id = (int)reader["PrizeId"],
+                        Title = (string)reader["Title"]
+                    };
+                }
+                return result;
+            }
+
+
         }
-    }
+    }   
 }

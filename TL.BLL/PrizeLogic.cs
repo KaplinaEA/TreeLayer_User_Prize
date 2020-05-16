@@ -17,26 +17,15 @@ namespace TL.BLL
             this.prizeLogic = new PrizeDao();
         }
 
-        public int Add(string value)
+        public void Add(string value)
         {
-            return this.prizeLogic.Add(value);
+                this.prizeLogic.Add(value);
         }
 
         public IEnumerable<Prize> GetAll()
         {
             return this.prizeLogic.GetAll();
         }
-
-        public void Serialize()
-        {
-            this.prizeLogic.Serialize();
-        }
-
-        public void Deserialize()
-        {
-            this.prizeLogic.Deserialize();
-        }
-
 
         public Prize Get(int value)
         {

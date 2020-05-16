@@ -27,16 +27,6 @@ namespace TL.BLL
             this.userPrizeLogic.Delete(value);
         }
 
-        public void Serialize()
-        {
-            this.userPrizeLogic.Serialize();
-        }
-
-        public void Deserialize()
-        {
-            this.userPrizeLogic.Deserialize();
-        }
-
         public IEnumerable<UserPrize> GetOnOne(int value)
         {
             return this.userPrizeLogic.GetOnOne(value);

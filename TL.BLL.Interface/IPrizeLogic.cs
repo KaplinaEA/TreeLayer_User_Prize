@@ -7,10 +7,8 @@ namespace TL.BLL.Interface
 {
     public interface IPrizeLogic
     {
-        int Add(string value);
+        void Add(string value);
         IEnumerable<Prize> GetAll();
-        void Serialize();
-        void Deserialize();
 
         Prize Get(int value);
     }

@@ -17,9 +17,9 @@ namespace TL.BLL
             this.userLogic = new Userdao();
         }
 
-        public int Add(string value1, DateTime value2)
+        public void Add(string value1, DateTime value2)
         {
-            return this.userLogic.Add(value1, value2);
+            this.userLogic.Add(value1, value2);
         }
 
         public void Delete(int value)
@@ -32,16 +32,7 @@ namespace TL.BLL
             return this.userLogic.GetAll();
         }
 
-        public void Serialize()
-        {
-            this.userLogic.Serialize();
-        }
-
-        public void Deserialize()
-        {
-                this.userLogic.Deserialize();
-        }
-
+        
         public User Get(int value)
         {
             return userLogic.Get(value);

@@ -13,17 +13,6 @@ namespace TL.PL
         public static IUserPrizeLogic userPrizeLogic = new UserPrizeLogic();
         public static IPrizeLogic prizeLogic = new PrizeLogic();
 
-
-        public static void Start()
-        {
-            if(!File.Exists("PrizeFile.dat")) prizeLogic.Serialize();
-            if (!File.Exists("UserPrizeFile.dat")) userPrizeLogic.Serialize();
-            if (!File.Exists("UserFile.dat")) userLogic.Serialize();
-           
-            userPrizeLogic.Deserialize();
-            userLogic.Deserialize();
-            prizeLogic.Deserialize();
-        }
         public static void AddUser()
         {
             try
@@ -33,21 +22,32 @@ namespace TL.PL
                 Console.WriteLine("Введите: Дату рождения(дд/мм/гггг или дд.мм.гггг)");
                 string[] date = Console.ReadLine().Split('/', '.');
                 DateTime dat = new DateTime(int.Parse(date[2]), int.Parse(date[1]), int.Parse(date[0]));
-                if(dat>DateTime.Now) throw new Exception("Дата не может быть больше текущей");
-                Console.WriteLine("Пользователь добавлен. Id: {0}", userLogic.Add(name, dat));
-                userLogic.Serialize();
+                if (dat > DateTime.Now) throw new ArgumentOutOfRangeException();
+                userLogic.Add(name, dat);
+                Console.WriteLine("Пользователь добавлен.");   
             }
-            catch
+            catch(ArgumentOutOfRangeException e)
             {
-                Console.WriteLine("Неправильно указана дата");
+               Console.WriteLine("Неправильно указана дата");
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                Console.WriteLine("Пользователь с таким именем уже существует");
             }
 
         }
         public static void AddPrize()
         {
-            Console.WriteLine("Введите: Наименование");      
-            Console.WriteLine("Награда добавлена. Id: {0}", prizeLogic.Add(Console.ReadLine()));
-            prizeLogic.Serialize();
+            try
+            {
+                Console.WriteLine("Введите: Наименование");
+                prizeLogic.Add(Console.ReadLine());
+                Console.WriteLine("Награда добавлена.");
+            }
+            catch(System.Data.SqlClient.SqlException e)
+            {
+                Console.WriteLine("Такая награда уже существует");
+            }
         }
         public static void AddUserPrize()
         {
@@ -67,23 +67,21 @@ namespace TL.PL
                 }
                 if (no)
                 {
-                    userPrizeLogic.Add(int.Parse(id[0]), int.Parse(id[1])); 
+                    userPrizeLogic.Add(int.Parse(id[0]), int.Parse(id[1]));
                     Console.WriteLine("Пользователь получил награду");
-                    userPrizeLogic.Serialize();
-                }              
-            }            
+                }
+            }
         }
         public static void DeleteUser()
         {
-            Console.WriteLine("Введите: Id");
-            int id = int.Parse(Console.ReadLine());
+            Console.WriteLine("Введите: id");
+            int id =int.Parse( Console.ReadLine());
             if (userLogic.Get(id) != null)
             {
                 userLogic.Delete(id);
                 userPrizeLogic.Delete(id);
                 Console.WriteLine("Пользователь удален, весе награды сброшены");
-                userPrizeLogic.Serialize();
-                userLogic.Serialize();
+               
             }
             else Console.WriteLine("Данного пользователя нет в базе");
         }
@@ -94,9 +92,9 @@ namespace TL.PL
                 Console.WriteLine(item);
                 foreach (var item2 in userPrizeLogic.GetOnOne(item.Id))
                 {
-                    Console.WriteLine("\t"+prizeLogic.Get(item2.PrizeId));
+                    Console.WriteLine("\t" + prizeLogic.Get(item2.PrizeId));
                 }
-            } 
+            }
         }
         public static void GetAllPrize()
         {

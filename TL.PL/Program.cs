@@ -6,7 +6,6 @@ namespace TL.PL
     {
         static void Main(string[] args)
         {
-            LogicPL.Start();
             bool A = true;
             while (A)
             {
